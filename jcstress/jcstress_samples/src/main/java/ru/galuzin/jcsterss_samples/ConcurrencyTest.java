@@ -28,7 +28,7 @@
 // * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // * THE POSSIBILITY OF SUCH DAMAGE.
 // */
-//package ru.galuzin;
+//package ru.galuzin.jcsterss_samples;
 //
 //import org.openjdk.jcstress.annotations.*;
 //import org.openjdk.jcstress.infra.results.II_Result;
@@ -37,18 +37,28 @@
 //
 //@JCStressTest
 //// Outline the outcomes here. The default outcome is provided, you need to remove it:
-//@Outcome(id = "0, 0", expect = Expect.ACCEPTABLE, desc = "Default outcome.")
+//@Outcome(id = {"0, 1", "1, 0" }, expect = Expect.ACCEPTABLE_INTERESTING, desc = "only one set")
+//@Outcome(id = {"1, 1" }, expect = Expect.ACCEPTABLE_INTERESTING, desc = "both set")
+//@Outcome(id = {"0, 0" }, expect = Expect.ACCEPTABLE_INTERESTING, desc = "non set")
 //@State
 //public class ConcurrencyTest {
 //
+//    int x = 0;
+//
+//    int y = 0;
+//
 //    @Actor
 //    public void actor1(II_Result r) {
-//        // Put the code for first thread here
+//        y = 1;
+//        r.r1 = x;
+//        r.r2 = y;
 //    }
 //
 //    @Actor
 //    public void actor2(II_Result r) {
-//        // Put the code for second thread here
+//        x = 1;
+//        r.r1 = x;
+//        r.r2 = y;
 //    }
 //
 //}

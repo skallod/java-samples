@@ -119,27 +119,27 @@ public class ConcurrencySample_02_ConcurrentHashMap {
      */
 
 
-    @JCStressTest
-    @Outcome(id = { "Bar, null", "Baz, null" }, expect = FORBIDDEN, desc = "One update lost.")
-    @Outcome(id = { "Bar, Baz", "Baz, Bar"},    expect = ACCEPTABLE_INTERESTING, desc = "Both updates.")
-    @State
-    public static class CorrectMultimap extends Multimap {
-        @Actor
-        public void actor1() {
-            addCorrect("Foo", "Bar");
-        }
-
-        @Actor
-        public void actor2() {
-            addCorrect("Foo", "Baz");
-        }
-
-        @Arbiter
-        public void arbiter(LL_Result s) {
-            s.r1 = poll("Foo", 0);
-            s.r2 = poll("Foo", 1);
-        }
-    }
+//    @JCStressTest
+//    @Outcome(id = { "Bar, null", "Baz, null" }, expect = FORBIDDEN, desc = "One update lost.")
+//    @Outcome(id = { "Bar, Baz", "Baz, Bar"},    expect = ACCEPTABLE_INTERESTING, desc = "Both updates.")
+//    @State
+//    public static class CorrectMultimap extends Multimap {
+//        @Actor
+//        public void actor1() {
+//            addCorrect("Foo", "Bar");
+//        }
+//
+//        @Actor
+//        public void actor2() {
+//            addCorrect("Foo", "Baz");
+//        }
+//
+//        @Arbiter
+//        public void arbiter(LL_Result s) {
+//            s.r1 = poll("Foo", 0);
+//            s.r2 = poll("Foo", 1);
+//        }
+//    }
 
 
 
