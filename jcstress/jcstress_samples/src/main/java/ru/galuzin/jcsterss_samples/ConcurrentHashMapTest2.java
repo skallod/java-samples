@@ -3,7 +3,9 @@ package ru.galuzin.jcsterss_samples;
 import org.openjdk.jcstress.annotations.*;
 import org.openjdk.jcstress.infra.results.LL_Result;
 
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @JCStressTest
 @Outcome(id = {"a, a", "b, b" }, expect = Expect.ACCEPTABLE_INTERESTING, desc = "both set")
@@ -13,30 +15,41 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ConcurrentHashMapTest2 {
 
 
-    final ConcurrentHashMap<String, Pair> chm;
+//    final HashMap<String, Pair> chm;
+
+    static AtomicInteger counter = new AtomicInteger(0);
+
+    final Pair v;
 
     public ConcurrentHashMapTest2() {
-        chm = new ConcurrentHashMap<>();
-        chm.put("key", new Pair());
+//        chm = new HashMap<>();
+//        chm.put("key", new Pair());
+        v = new Pair();
+        System.err.println("gal count " + counter.incrementAndGet());
     }
 
+    /**
+     * Тест создается каждый раз новый, actor1, actor2 выполняются по разу
+     */
     @Actor
     public void actor1() {
-        chm.computeIfPresent("key", (k, v) ->{
-            if (v.f.equals("a")) {
+        //chm.computeIfPresent("key", (k, v) ->{
+            //if (v.f.equals("a")) {
                 v.f = "b";
+                try {
+                    Thread.sleep(1_000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 v.s = "b";
-            } else {
-                v.f = "a";
-                v.s = "a";
-            }
-            return v;
-        });
+            //}
+            //return v;
+        //});
     }
 
     @Actor
     public void actor2(LL_Result r) {
-        final Pair v = chm.get("key");
+        //final Pair v = chm.get("key");
         r.r1 = v.f;
         r.r2 = v.s;
     }
