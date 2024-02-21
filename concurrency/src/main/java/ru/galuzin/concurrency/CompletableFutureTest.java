@@ -2,10 +2,13 @@ package ru.galuzin.concurrency;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 public class CompletableFutureTest {
 
@@ -18,16 +21,18 @@ public class CompletableFutureTest {
     ExecutorService executorService = Executors.newCachedThreadPool();
 
     public static void main(String[] args) throws InterruptedException {
-        CompletableFutureTest featureTest = new CompletableFutureTest();
+        CompletableFutureTest futureTest = new CompletableFutureTest();
         //async
-//        featureTest.cancelProcess("to", 3);// not work
-        CompletableFuture.runAsync(()->featureTest.initProcess("to", TestCase.TIME_OUT),featureTest.executorService);
-        CompletableFuture.runAsync(()->featureTest.initProcess("to", TestCase.TIME_OUT),featureTest.executorService);
+//        futureTest.cancelProcess("to", 3);// not work
+//        CompletableFuture.runAsync(()->futureTest.initProcess("to", TestCase.TIME_OUT),futureTest.executorService);
+//        CompletableFuture.runAsync(()->futureTest.initProcess("to", TestCase.TIME_OUT),futureTest.executorService);
+        futureTest.test2();
         Thread.sleep(180_000);
     }
 
-    enum TestCase { INNER_E, TIME_OUT, SUCCESS}
 
+
+    enum TestCase { INNER_E, TIME_OUT, SUCCESS;}
     void initProcess(String owner, TestCase testCase){
         // Call this::convert method reference when both
         // previous stages complete.
@@ -178,6 +183,39 @@ public class CompletableFutureTest {
         }
         log.info("op sec = " + TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - timeMillis));
         return (int)result;
+    }
+
+    private void test2() {
+        for (int i = 0; i < 2; i++) {
+            final CompletableFuture<String> stringCompletableFuture = _test2();
+            final String join = stringCompletableFuture.join();
+            System.out.println("join = " + join);
+        }
+    }
+    private CompletableFuture<String> _test2() {
+        return submit(() -> {
+            log.info("supplier start");
+            final String value1 = MDC.get("key1");
+            log.info("value1 = " + value1);
+            MDC.put("key1", UUID.randomUUID().toString());
+            log.info("supplier finish");
+            return "Mega result";
+        })
+            .whenComplete((u, ex) -> {
+                log.info("Chain 3 req {} {}", u, MDC.get("key1"));
+                if (ex != null) {
+                    log.warn("Chain 3 ex", ex);
+                }});
+    }
+
+    <U> CompletableFuture<U> submit(Supplier<U> supplier) {
+        return CompletableFuture.supplyAsync(supplier)
+            .whenComplete((u, ex) -> {
+            log.info("Chain 2 req {}", u);
+            if (ex != null) {
+                log.warn("Chain 2 ex", ex);
+            }
+        });
     }
 
     void operTimeout() {
