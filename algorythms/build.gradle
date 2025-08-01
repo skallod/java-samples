@@ -2,7 +2,7 @@ plugins {
     id 'java'
 }
 
-group = 'ru.vtb.smartreplication'
+group = 'ru.galuzin.tasks'
 version = '1.0-SNAPSHOT'
 
 repositories {
@@ -10,7 +10,9 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.reactivestreams:reactive-streams:1.0.4'
     testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.reactivestreams:reactive-streams-tck:1.0.4'
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
